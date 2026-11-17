@@ -18,6 +18,7 @@
       "@biomejs/cli-linux-arm64",
       "@biomejs/cli-linux-x64-musl",
       "@biomejs/cli-linux-arm64-musl",
+      "@biomejs/cli-freebsd-x64",
       "@biomejs/cli-android-x64",
       "@biomejs/cli-android-arm64",
       "@biomejs/wasm-web",

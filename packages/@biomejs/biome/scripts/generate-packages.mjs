@@ -10,6 +10,15 @@ const MANIFEST_PATH = resolve(CLI_ROOT, "package.json");
 
 const rootManifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, "utf-8"));
 
+// Release channels that do not build every platform can skip them by name,
+// for example `BIOME_SKIP_PLATFORMS=freebsd-x64`.
+const SKIPPED_PLATFORMS = new Set(
+	(process.env.BIOME_SKIP_PLATFORMS ?? "")
+		.split(",")
+		.map((platform) => platform.trim())
+		.filter(Boolean),
+);
+
 function getName(platform, arch, prefix = "cli") {
 	return format(`${prefix}-${platform}`, arch);
 }
@@ -17,6 +26,13 @@ function getName(platform, arch, prefix = "cli") {
 function copyBinaryToNativePackage(platform, arch, binaryPlatform = platform) {
 	const os = platform.split("-")[0];
 	const buildName = getName(platform, arch);
+	const codeTarget = buildName.replace(/^cli-/, "");
+
+	if (SKIPPED_PLATFORMS.has(codeTarget)) {
+		console.info(`Skip ${codeTarget}`);
+		return;
+	}
+
 	const packageRoot = resolve(PACKAGES_ROOT, buildName);
 	const packageName = `@biomejs/${buildName}`;
 
@@ -96,11 +112,27 @@ function updateVersionInJsPackage(packageName) {
 function updateVersionInDependencies(dependencies, version) {
 	if (dependencies) {
 		for (const dependency of Object.keys(dependencies)) {
-			if (dependency.startsWith("@biomejs/")) {
-				dependencies[dependency] = version;
+			if (!dependency.startsWith("@biomejs/")) {
+				continue;
 			}
+			if (isSkippedNativePackage(dependency)) {
+				delete dependencies[dependency];
+				continue;
+			}
+			dependencies[dependency] = version;
 		}
 	}
+}
+
+/**
+ * Checks whether a dependency refers to a native package that the current
+ * release channel does not publish.
+ */
+function isSkippedNativePackage(name) {
+	const prefix = "@biomejs/cli-";
+	return (
+		name.startsWith(prefix) && SKIPPED_PLATFORMS.has(name.slice(prefix.length))
+	);
 }
 
 /**
@@ -143,6 +175,9 @@ for (const platform of PLATFORMS) {
 for (const arch of ARCHITECTURES) {
 	copyBinaryToNativePackage("android-%s", arch, "linux-%s-musl");
 }
+
+// FreeBSD is currently built for x86_64 only.
+copyBinaryToNativePackage("freebsd-%s", "x64");
 
 for (const jsPackage of JS_PACKAGES) {
 	updateVersionInJsPackage(jsPackage);

@@ -1,0 +1,23 @@
+{
+  "name": "@biomejs/cli-freebsd-x64",
+  "version": "2.6.8",
+  "license": "MIT OR Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/biomejs/biome.git",
+    "directory": "packages/@biomejs/biome/cli-freebsd-x64"
+  },
+  "engines": {
+    "node": ">=14.21.3"
+  },
+  "homepage": "https://biomejs.dev",
+  "os": [
+    "freebsd"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "publishConfig": {
+    "provenance": true
+  }
+}

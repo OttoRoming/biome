@@ -245,6 +245,9 @@ importers:
       '@biomejs/cli-darwin-x64':
         specifier: 2.6.8
         version: link:../cli-darwin-x64
+      '@biomejs/cli-freebsd-x64':
+        specifier: 2.6.8
+        version: link:../cli-freebsd-x64
       '@biomejs/cli-linux-arm64':
         specifier: 2.6.8
         version: link:../cli-linux-arm64
@@ -271,6 +274,8 @@ importers:
   packages/@biomejs/cli-darwin-arm64: {}
 
   packages/@biomejs/cli-darwin-x64: {}
+
+  packages/@biomejs/cli-freebsd-x64: {}
 
   packages/@biomejs/cli-linux-arm64: {}
 

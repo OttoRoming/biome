@@ -108,6 +108,52 @@ jobs:
           path: ./dist/biome-*
           if-no-files-found: error
 
+  build-freebsd:
+    name: Package freebsd-x64
+    runs-on: depot-ubuntu-24.04-16
+    needs: version
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install FreeBSD target
+        run: rustup target add x86_64-unknown-freebsd
+
+      # Zig supplies the FreeBSD libc for cross-compilation. Pin the Zig version
+      # because it determines the FreeBSD ABI baseline of the binary.
+      - name: Install Zig
+        uses: mlugg/setup-zig@d1434d08867e3ee9daa34448df10607b98908d29 # v2.2.1
+        with:
+          version: 0.16.0
+
+      - name: Install cargo-zigbuild
+        uses: taiki-e/install-action@f7e5d7c961414b23f5b25b2da9294395d08513ad # v2.87.26
+        with:
+          tool: cargo-zigbuild
+
+      # Build the CLI binary
+      - name: Build binaries
+        run: cargo zigbuild -p biome_cli --release --target x86_64-unknown-freebsd
+        env:
+          # Strip all debug symbols from the resulting binaries
+          RUSTFLAGS: '-C strip=symbols -C codegen-units=1'
+          # Inline the version of the npm package in the CLI binary
+          BIOME_VERSION: ${{ needs.version.outputs.version }}
+
+      - name: Copy CLI binary
+        run: |
+          mkdir dist
+          cp target/x86_64-unknown-freebsd/release/biome ./dist/biome-freebsd-x64
+
+      # Upload the CLI binary as a build artifact
+      - name: Upload CLI artifact
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: cli-x86_64-unknown-freebsd
+          path: ./dist/biome-*
+          if-no-files-found: error
+
   # Build GNU/Linux binaries in Docker, using Debian 11 (bullseye), to support older versions of glibc.
   build-gnu:
     needs: version
@@ -191,7 +237,7 @@ jobs:
       - name: Upload WASM artifact
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: wasm-${{ matrix.target }}
+          name: wasm-artefact
           path: |
             ./packages/@biomejs/wasm-bundler
             ./packages/@biomejs/wasm-nodejs
@@ -203,6 +249,7 @@ jobs:
     runs-on: ubuntu-24.04 # Must be a GitHub hosted runner for provenance
     needs:
       - build
+      - build-freebsd
       - build-gnu
       - build-wasm
     environment: npm-publish

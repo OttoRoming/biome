@@ -28,6 +28,9 @@ for (const arch of ARCHITECTURES) {
 	updateOptionalDependencies("android-%s", arch, "linux-%s-musl");
 }
 
+// FreeBSD is currently built for x86_64 only.
+updateOptionalDependencies("freebsd-%s", "x64");
+
 for (const target of WASM_TARGETS) {
 	updateWasmPackage(target);
 }

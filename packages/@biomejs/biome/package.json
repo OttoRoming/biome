@@ -55,6 +55,7 @@
     "@biomejs/cli-linux-arm64": "2.6.8",
     "@biomejs/cli-linux-x64-musl": "2.6.8",
     "@biomejs/cli-linux-arm64-musl": "2.6.8",
+    "@biomejs/cli-freebsd-x64": "2.6.8",
     "@biomejs/cli-android-x64": "2.6.8",
     "@biomejs/cli-android-arm64": "2.6.8"
   }

@@ -31,6 +31,13 @@ Stable releases are published manually by the [Core Contributors team](/GOVERNAN
 
 Stable releases are published on GitHub, and `npmjs.org` under the `latest` tag.
 
+## Binaries
+
+Standalone binaries are attached to GitHub releases for each supported platform.
+
+The FreeBSD x64 binary is cross-compiled from Linux with Zig and requires FreeBSD 14.0 or newer. Because it is not exercised by CI, validate it on a FreeBSD 14.x host before announcing a release by running `biome --version`, `biome check`, and `biome format` from both the standalone binary and the npm package.
+
+`biome upgrade` does not support the FreeBSD standalone binary yet; download a new release to upgrade.
 
 ## Crates
 

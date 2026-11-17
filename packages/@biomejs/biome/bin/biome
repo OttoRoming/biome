@@ -34,6 +34,9 @@ const PLATFORMS = {
 		x64: "@biomejs/cli-linux-x64-musl/biome",
 		arm64: "@biomejs/cli-linux-arm64-musl/biome",
 	},
+	freebsd: {
+		x64: "@biomejs/cli-freebsd-x64/biome",
+	},
 	android: {
 		x64: "@biomejs/cli-android-x64/biome",
 		arm64: "@biomejs/cli-android-arm64/biome",
